@@ -23,7 +23,7 @@ class BadgesList extends React.Component {
                     </div>
                     <div className="col-8">
                       <div className="card-body">
-                        <h4 className="card-title fw-bold">
+                        <h4 className="fw-bolder">
                           {`${item.firstName} ${item.lastName}`}{" "}
                         </h4>
                         <p className="card-text">

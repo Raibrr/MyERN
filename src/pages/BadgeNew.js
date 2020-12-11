@@ -2,12 +2,11 @@
 import React from "react";
 
 // Components
-import Navbar from "../components/Navbar.js";
 import Badge from "../components/Badge.js";
 import BadgeForm from "../components/BadgeForm";
 
 // Stayles
-import "../styles/BadgeNew.css";
+import "./styles/BadgeNew.css";
 import badge_header from "../images/badge-header.svg";
 
 class BadgeNew extends React.Component {
@@ -31,9 +30,8 @@ class BadgeNew extends React.Component {
 
   render() {
     return (
-      <div>
+      <>
         <div>
-          <Navbar />
           <div className="BadgeNew__hero">
             <img className="img-fluid" src={badge_header} alt="Badge_header" />
           </div>
@@ -58,7 +56,7 @@ class BadgeNew extends React.Component {
             </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 }

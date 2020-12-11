@@ -20,6 +20,7 @@ class BadgeNew extends React.Component {
     console.log(this.state);
   };
   render() {
+    console.log(this.props)
     return (
       <div>
         <h1>New Attendant</h1>
@@ -34,7 +35,7 @@ class BadgeNew extends React.Component {
               onChange={this.props.onChange}
               //value solo sirve para NO guardar los valores en 2 lugare a la vez, lo mencionan en el curso de React de
               //Platzi
-              value={this.props.formValues.FirstName}
+              value={this.state.firstName}
             />
 
             <label>Last Name</label>
