@@ -14,19 +14,13 @@ class BadgeNew extends React.Component {
     console.log("handleClick");
   };
 
-  handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form was submitted");
-    console.log(this.state);
-  };
   render() {
-    console.log(this.props)
     return (
       <div>
         <h1>New Attendant</h1>
 
         <div className="form-grup">
-          <form onSubmit={this.handleSubmit}>
+          <form onSubmit={this.props.onSubmit}>
             <label>FirstName</label>
             <input
               type="text"

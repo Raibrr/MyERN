@@ -1,47 +1,91 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTwitter } from '@fortawesome/free-brands-svg-icons';
+import React from "react";
 
+import { Link } from "react-router-dom";
+import List from "../components/List";
 
 class BadgesList extends React.Component {
+  state = {
+    renderData: [],
+  };
+
+  componentDidUpdate(prevProps) {
+    console.log("did update de list");
+    if (this.props.switchState !== prevProps.switchState) {
+      this.props.switchState === true
+        ? this.setState({ renderData: this.props.dataRnM })
+        : this.setState({ renderData: this.props.dataBadgeCustom });
+    }
+
+    if (this.props.dataRnM !== prevProps.dataRnM) {
+      this.setState({ renderData: this.props.dataRnM });
+    }
+
+    if (this.props.dataBadgeCustom !== prevProps.dataBadgeCustom) {
+      this.setState({ renderData: this.props.dataBadgeCustom });
+    }
+  }
+
+  validatRenderData = (item) => {
+    //El nombre de los item.* hacen referencia a como vine el objeto que se recupera de la API
+    if ("firstName" in item) {
+      return (
+        (this.badgeName = `${item.firstName} ${item.lastName}`),
+        (this.ocupation = `${item.jobTitle}`),
+        //Email se usa porque el Gravatar (es decir la imagen) se gener apartir del mismo.
+        (this.email = item.email),
+        //
+        (this.twitter = item.twitter)
+      );
+    }
+    return (
+      (this.badgeName = `${item.name}`),
+      (this.ocupation = `${item.species}`),
+      (this.image = item.image),
+      (this.twitter = "No twitter were found")
+    );
+  };
+
   render() {
-    console.log(this.props.dataBadge);
+    if (this.props.dataEmpty === true) {
+      return (
+        <div>
+          <h1>No Badge were founde</h1>
+          <Link to="badge/new" className="btn btn-primary">
+            Crate new Badge
+          </Link>
+        </div>
+      );
+    }
+
+    if (this.state.renderData.length > 0) {
+      return (
+        <div>
+          <ul className="list-unstyled">
+            <li>
+              {this.state.renderData.reverse().map((item, index) => {
+                this.validatRenderData(item);
+                return (
+                  <List
+                    key={index}
+                    badgeName={this.badgeName}
+                    ocupation={this.ocupation}
+                    email={this.email}
+                    twitter={this.twitter}
+                  />
+                );
+              })}
+            </li>
+          </ul>
+        </div>
+      );
+    }
+
     return (
       <div>
         <ul className="list-unstyled">
-          {this.props.dataBadge.map((item) => {
-            return (
-              <li>
-                <div className="card mb-3">
-                  <div className="row">
-                    <div className="col align-self-center col-4 ">
-                      <img
-                        className="rounded-circle col aligin-self-center w-auto h-auto"
-                        src={item.avatarUrl}
-                        alt="..."
-                      />
-                    </div>
-                    <div className="col-8">
-                      <div className="card-body">
-                        <h4 className="fw-bolder">
-                          {`${item.firstName} ${item.lastName}`}{" "}
-                        </h4>
-                        <p className="card-text">
-                        <FontAwesomeIcon icon={faTwitter} className='text-info'/>
-                        <a
-                            href="/"
-                            target="_blank"
-                            className="text-info text-decoration-none"
-                          >{`@${item.twitter}`}</a>
-                        </p>
-                        <p className="card-text">{`${item.jobTitle}`}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
+          <li>
+            <List />
+          </li>
         </ul>
       </div>
     );

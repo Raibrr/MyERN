@@ -4,13 +4,20 @@ import React from "react";
 // Components
 import Badge from "../components/Badge.js";
 import BadgeForm from "../components/BadgeForm";
+import Hero from "../components/Hero.js";
+import List from "../components/List.js";
 
 // Stayles
 import "./styles/BadgeNew.css";
 import badge_header from "../images/badge-header.svg";
 
+//API
+import api from "../api";
+
 class BadgeNew extends React.Component {
   state = {
+    postLoading: false,
+    postError: null,
     form: {
       firstName: "",
       lastName: "",
@@ -28,14 +35,37 @@ class BadgeNew extends React.Component {
     });
   };
 
+  handleSubmit = async (e) => {
+    e.preventDefault();
+    this.setState({ postLoading: true });
+    try {
+      const data = this.state.form;
+      await api.badges.create(data);
+      this.setState({ postLoading: false });
+      this.props.history.push("/badges");
+    } catch (error) {
+      this.setState({ postLoading: false, postError: error });
+    }
+  };
+
   render() {
+    if (this.state.postLoading === true) {
+      return (
+        <>
+          <Hero />
+          <div>
+            <ul className="list-unstyled">
+              <li>
+                <List />
+              </li>
+            </ul>
+          </div>
+        </>
+      );
+    }
     return (
       <>
-        <div>
-          <div className="BadgeNew__hero">
-            <img className="img-fluid" src={badge_header} alt="Badge_header" />
-          </div>
-        </div>
+        <Hero />
 
         <div className="container">
           <div className="row">
@@ -51,6 +81,7 @@ class BadgeNew extends React.Component {
             <div className="col-6">
               <BadgeForm
                 onChange={this.handleChange}
+                onSubmit={this.handleSubmit}
                 formValues={this.state.form}
               />
             </div>
