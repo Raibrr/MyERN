@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 //Components
 import BadgesList from "../components/BadgesList";
 import Button from "../components/Button";
@@ -11,148 +11,152 @@ import api from "../api";
 //libraries
 import Axios from "axios";
 
-class Badgests extends React.Component {
-  state = {
-    dataCustom: [],
-    dataRnM: [],
-    dataEmpty: false,
-    loading: true,
-    error: null,
-    badgeSwitch: false,
-    pageApiRnM: 1,
-    requestBySwitch: false,
-    firstSwitchRequest: false,
-    moreBadgesLoading: false,
-  };
-  async componentDidMount() {
-    console.log("DidMount de badges");
+const Badgests = (props) => {
+  const [dataCustom, setDataCustom] = useState([]);
+  const [dataRnM, setDataRnM] = useState([]);
+  const [dataEmpty, setDataEmpty] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [badgeSwitch, setBadgeSwitch] = useState(false);
+  const [pageApiRnM, setPageApiRnM] = useState(1);
+  const [requestBySwitch, setRequestBySwitch] = useState(false);
+  const [firstSwitchRequest, setFirstSwitchRequest] = useState(false);
+  const [moreBadgesLoading, setMoreBadgesLoading] = useState(false);
+
+  useEffect(async () => {
     await this.fetchdataBadges();
-    console.log(this.state.dataCustom, this.state.loading);
-    if (this.state.dataCustom.length === 0) {
+    if (dataCustom.length === 0) {
       this.setState({ dataEmpty: true });
     }
-  }
+  }, []);
 
-  fetchdataBadges = async () => {
+  const fetchdataBadges = async () => {
     try {
       const data = await api.badges.list();
       console.log(data);
-      this.setState({ dataCustom: data, loading: false });
+
+      setDataCustom(data);
+      setLoading(false);
     } catch (error) {
-      this.setState({ loading: false, error: error });
+      setError(error);
     }
   };
 
-  fetchDataRnM = async () => {
+  const fetchDataRnM = async () => {
     /* ///
       If necesario para que el switch no llame mas datos cada que esta true
     */ ////
-    if (
-      this.state.firstSwitchRequest === true &&
-      this.state.requestBySwitch === true
-    ) {
+    if (firstSwitchRequest === true && requestBySwitch === true) {
       console.log("entro al return");
-      return this.setState({ loading: false, requestBySwitch: false });
+      return setLoading(false), setRequestBySwitch(false);
     }
     //
     //
     try {
       const response = await Axios.get(
-        `https://rickandmortyapi.com/api/character?page=${this.state.pageApiRnM}`
+        `https://rickandmortyapi.com/api/character?page=${pageApiRnM}`
       );
       const {
         data: { results: reply },
       } = response;
-      this.setState({
+      setLoading(false),
+        setDataRnM([].concat(dataRnM, reply)),
+        setPageApiRnM(pageApiRnM + 1),
+        setRequestBySwitch(false);
+      /* this.setState({
         loading: false,
-        dataRnM: [].concat(this.state.dataRnM, reply),
-        pageApiRnM: this.state.pageApiRnM + 1,
+        dataRnM: ,
+        pageApiRnM: pageApiRnM + 1,
         requestBySwitch: false,
-      });
+      }); */
     } catch (error) {
-      this.setState({ loading: false, error });
+      setError(error), setLoading(false);
+      /* this.setState({ loading: false, error }); */
     }
   };
 
-  onSwitchAction = async () => {
-    if (this.state.badgeSwitch === false) {
-      await this.setState({
+  const onSwitchAction = async () => {
+    if (badgeSwitch === false) {
+      await setLoading(true), await setRequestBySwitch(true);
+      /* await this.setState({
         loading: true,
         requestBySwitch: true,
-      });
-      await this.fetchDataRnM();
+      }); */
+      await fetchDataRnM();
     }
-    if (this.state.firstSwitchRequest === false) {
-      this.setState({ firstSwitchRequest: true });
+    if (firstSwitchRequest === false) {
+      setFirstSwitchRequest(true);
+      /* this.setState({ firstSwitchRequest: true }); */
     }
-    this.setState({ badgeSwitch: !this.state.badgeSwitch });
+    setBadgeSwitch(!badgeSwitch);
+    /* this.setState({ badgeSwitch: !this.state.badgeSwitch }); */
   };
 
-  moreBadgesRnM = async () => {
-    this.setState({ moreBadgesLoading: true });
+  const moreBadgesRnM = async () => {
+    setMoreBadgesLoading(true);
+    /* this.setState({ moreBadgesLoading: true }); */
     await this.fetchDataRnM();
-    this.setState({ moreBadgesLoading: false });
+    setMoreBadgesLoading(false);
+    /* this.setState({ moreBadgesLoading: false }); */
   };
 
-  render() {
-    if (this.state.error) {
-      return `Error ${this.state.error.message}`;
-    }
-
-    return (
-      <>
-        <Hero />
-
-        <div className="row justify-content-center">
-          <div className="col-sm-5 col-5">
-            <Form.Check
-              custom
-              type="switch"
-              id="custom-switch"
-              checked={this.state.badgeSwitch}
-              onChange={this.onSwitchAction}
-            />
-            <p className="Badge__switch">Badges Rick n Morty?</p>
-          </div>
-          <div className="col-sm-2 col-5">
-            {this.state.dataCustom.length > 0 ? (
-              <Button
-                text="New Badge"
-                className="btn btn-primary"
-                redirect={`new`}
-              />
-            ) : null}
-          </div>
-        </div>
-        <div className="container width: 25%">
-          <BadgesList
-            dataEmpty={this.state.dataEmpty}
-            dataBadgeCustom={this.state.dataCustom}
-            dataRnM={this.state.dataRnM}
-            inLogin={this.state.loading}
-            switchState={this.state.badgeSwitch}
-          />
-        </div>
-        <div>
-          {this.state.badgeSwitch && (
-            <div className="row justify-content-center">
-              {this.state.moreBadgesLoading ? (
-                <Spinner animation="grow" variant="dark" />
-              ) : (
-                <button
-                  type="button"
-                  className="btn btn-dark col-8"
-                  onClick={() => this.moreBadgesRnM()}
-                >
-                  More Badges
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </>
-    );
+  if (error) {
+    return `Error ${error.message}`;
   }
-}
+
+  return (
+    <>
+      <Hero />
+
+      <div className="row justify-content-center">
+        <div className="col-sm-5 col-5">
+          <Form.Check
+            custom
+            type="switch"
+            id="custom-switch"
+            checked={badgeSwitch}
+            onChange={onSwitchAction}
+          />
+          <p className="Badge__switch">Badges Rick n Morty?</p>
+        </div>
+        <div className="col-sm-2 col-5">
+          {this.state.dataCustom.length > 0 ? (
+            <Button
+              text="New Badge"
+              className="btn btn-primary"
+              redirect={`new`}
+            />
+          ) : null}
+        </div>
+      </div>
+      <div className="container width: 25%">
+        <BadgesList
+          dataEmpty={dataEmpty}
+          dataBadgeCustom={dataCustom}
+          dataRnM={dataRnM}
+          inLogin={loading}
+          switchState={badgeSwitch}
+        />
+      </div>
+      <div>
+        {badgeSwitch && (
+          <div className="row justify-content-center">
+            {moreBadgesLoading ? (
+              <Spinner animation="grow" variant="dark" />
+            ) : (
+              <button
+                type="button"
+                className="btn btn-dark col-8"
+                onClick={() => this.moreBadgesRnM()}
+              >
+                More Badges
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
 
 export default Badgests;
