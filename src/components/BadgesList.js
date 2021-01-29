@@ -34,10 +34,12 @@ class BadgesList extends React.Component {
         //Email se usa porque el Gravatar (es decir la imagen) se gener apartir del mismo.
         (this.email = item.email),
         //
-        (this.twitter = item.twitter)
+        (this.twitter = item.twitter),
+        (this.image = null)
       );
     }
     return (
+      (this.RnMInformation = true),
       (this.badgeName = `${item.name}`),
       (this.ocupation = `${item.species}`),
       (this.image = item.image),
@@ -46,6 +48,7 @@ class BadgesList extends React.Component {
   };
 
   render() {
+    let dataInOrder;
     if (this.props.dataEmpty === true) {
       return (
         <div>
@@ -58,12 +61,35 @@ class BadgesList extends React.Component {
     }
 
     if (this.state.renderData.length > 0) {
+      {
+        "firstName" in this.state.renderData[0]
+          ? (dataInOrder = this.state.renderData.reverse())
+          : (dataInOrder = this.state.renderData);
+      }
       return (
         <div>
           <ul className="list-unstyled">
             <li>
-              {this.state.renderData.reverse().map((item, index) => {
+              {dataInOrder.map((item, index) => {
                 this.validatRenderData(item);
+                if ("firstName" in item) {
+                  return (
+                    <Link
+                      to={`badge/${item.id}`}
+                      key={index}
+                      className="text-reset text-decoration-none"
+                    >
+                      <List
+                        key={index}
+                        badgeName={this.badgeName}
+                        ocupation={this.ocupation}
+                        email={this.email}
+                        twitter={this.twitter}
+                        image={this.image}
+                      />
+                    </Link>
+                  );
+                }
                 return (
                   <List
                     key={index}
@@ -71,6 +97,7 @@ class BadgesList extends React.Component {
                     ocupation={this.ocupation}
                     email={this.email}
                     twitter={this.twitter}
+                    image={this.image}
                   />
                 );
               })}

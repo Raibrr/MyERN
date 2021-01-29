@@ -14,8 +14,9 @@ import badge_header from "../images/badge-header.svg";
 //API
 import api from "../api";
 
-class BadgeNew extends React.Component {
+class BadgeView extends React.Component {
   state = {
+    putLoading: false,
     postLoading: false,
     postError: null,
     form: {
@@ -26,6 +27,26 @@ class BadgeNew extends React.Component {
       twitter: "",
     },
   };
+
+  componentDidMount() {
+    if (this.props.inEditing === true && this.state.putLoading === false) {
+      console.log("ejecucion");
+      this.fetchData();
+    }
+  }
+
+  fetchData = async (e) => {
+    console.log(this.props.inEditing);
+    this.setState({ putLoading: true });
+    try {
+      const data = await api.badges.read(this.props.match.params.badgeId);
+      console.log(data);
+      this.setState({ putLoading: false, form: data });
+    } catch (error) {
+      throw error;
+    }
+  };
+
   handleChange = (e) => {
     this.setState({
       form: {
@@ -35,7 +56,7 @@ class BadgeNew extends React.Component {
     });
   };
 
-  handleSubmit = async (e) => {
+  handlePostSubmit = async (e) => {
     e.preventDefault();
     this.setState({ postLoading: true });
     try {
@@ -48,8 +69,21 @@ class BadgeNew extends React.Component {
     }
   };
 
+  handlePutSubmit = async (e) => {
+    e.preventDefault();
+    this.setState({ putLoading: true });
+    try {
+      const data = this.state.form;
+      await api.badges.update(this.props.match.params.badgeId, data);
+      this.setState({ putLoading: false });
+      this.props.history.push("/badges");
+    } catch (error) {
+      this.setState({ putLoading: false, postError: error });
+    }
+  };
+
   render() {
-    if (this.state.postLoading === true) {
+    if (this.state.postLoading === true || this.state.putLoading === true) {
       return (
         <>
           <Hero />
@@ -63,6 +97,7 @@ class BadgeNew extends React.Component {
         </>
       );
     }
+
     return (
       <>
         <Hero />
@@ -76,12 +111,18 @@ class BadgeNew extends React.Component {
                 jobTitle={this.state.form.jobTitle}
                 email={this.state.form.email}
                 twitter={this.state.form.twitter}
+                loadingEdit={this.state.putLoading}
               />
             </div>
             <div className="col-6">
+              <h1>{this.props.formTitle}</h1>
               <BadgeForm
                 onChange={this.handleChange}
-                onSubmit={this.handleSubmit}
+                onSubmit={
+                  this.props.inEditing
+                    ? this.handlePutSubmit
+                    : this.handlePostSubmit
+                }
                 formValues={this.state.form}
               />
             </div>
@@ -92,4 +133,4 @@ class BadgeNew extends React.Component {
   }
 }
 
-export default BadgeNew;
+export default BadgeView;

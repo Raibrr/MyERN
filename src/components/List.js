@@ -15,7 +15,9 @@ class List extends React.Component {
             ) : (
               <Gravatar
                 className="rounded-circle col aligin-self-center w-auto h-auto"
+                //Uso EMAIL porque el gravatar se genera atraves del email//
                 email={this.props.email}
+                imageFromRnM={this.props.image}
               />
             )}
           </div>

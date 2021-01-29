@@ -1,5 +1,5 @@
 import React from "react";
-import confLogo from "../images/badge-header.svg";
+import confLogo from "../images/platziconf-logo.svg";
 import "./styles/Badges.css";
 
 class Hero extends React.Component {
@@ -8,12 +8,15 @@ class Hero extends React.Component {
       <>
         <div className="Badges__hero">
           <div className="Badges__container">
-            <div className="Badges_conf-logo">
-              <img
-                className="Badges_conf-logo"
-                src={confLogo}
-                alt="Conference logo"
-              />
+            <div className="row d-flex justify-content-between align-items-center">
+              <div className="col-10">
+                <img
+                  className="img-fluid"
+                  src={confLogo}
+                  alt="Conference logo"
+                />
+              </div>
+              <h1 className="text-light col-2">{this.props.badgeName}</h1>
             </div>
           </div>
         </div>

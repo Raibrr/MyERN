@@ -1,26 +1,11 @@
 import React from "react";
 
 class BadgeNew extends React.Component {
-  state = {};
-  /* handleChange = (e) => {
-    //console.log({ value: e.target.value });
-
-    this.setState({
-      [e.target.name]: e.target.value,
-    });
-  }; */
-
-  handleClick = (e) => {
-    console.log("handleClick");
-  };
-
   render() {
     return (
-      <div>
-        <h1>New Attendant</h1>
-
+      <>
         <div className="form-grup">
-          <form onSubmit={this.props.onSubmit}>
+          <form>
             <label>FirstName</label>
             <input
               type="text"
@@ -29,7 +14,7 @@ class BadgeNew extends React.Component {
               onChange={this.props.onChange}
               //value solo sirve para NO guardar los valores en 2 lugare a la vez, lo mencionan en el curso de React de
               //Platzi
-              value={this.state.firstName}
+              defaultValue={this.props.formValues.firstName}
             />
 
             <label>Last Name</label>
@@ -38,7 +23,7 @@ class BadgeNew extends React.Component {
               className="form-control"
               name="lastName"
               onChange={this.props.onChange}
-              value={this.state.lastName}
+              defaultValue={this.props.formValues.lastName}
             />
 
             <label>Email</label>
@@ -47,7 +32,7 @@ class BadgeNew extends React.Component {
               className="form-control"
               name="email"
               onChange={this.props.onChange}
-              value={this.state.Email}
+              defaultValue={this.props.formValues.email}
             />
 
             <label>JobTitle</label>
@@ -56,7 +41,7 @@ class BadgeNew extends React.Component {
               className="form-control"
               name="jobTitle"
               onChange={this.props.onChange}
-              value={this.state.JobTitle}
+              defaultValue={this.props.formValues.jobTitle}
             />
 
             <label>Twitter</label>
@@ -65,20 +50,20 @@ class BadgeNew extends React.Component {
               className="form-control"
               name="twitter"
               onChange={this.props.onChange}
-              value={this.state.Twitter}
+              defaultValue={this.props.formValues.twitter}
             />
             <div>
               <button
                 className="btn btn-primary"
                 //type="button"
-                onClick={this.handleClick}
+                onClick={this.props.onSubmit}
               >
                 Save
               </button>
             </div>
           </form>
         </div>
-      </div>
+      </>
     );
   }
 }
