@@ -1,112 +1,79 @@
-import React from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import List from "../components/List";
 
-class BadgesList extends React.Component {
-  state = {
-    renderData: [],
-  };
+const BadgesList = ({
+  switchState,
+  dataEmpty,
+  dataBadgeCustom,
+  dataRnM,
+  query,
+  inLoading,
+}) => {
+  console.log(inLoading);
+  const [renderData, setRenderData] = useState([]);
+  const [filteredBadges, setFilteredBadges] = useState([]);
+  let badgeName;
+  let ocupation;
+  let email;
+  let twitter;
+  let image;
 
-  componentDidUpdate(prevProps) {
-    console.log("did update de list");
-    if (this.props.switchState !== prevProps.switchState) {
-      this.props.switchState === true
-        ? this.setState({ renderData: this.props.dataRnM })
-        : this.setState({ renderData: this.props.dataBadgeCustom });
+  useEffect(() => {
+    console.log("efecto switchState");
+    if (switchState === true) {
+      return setRenderData(dataRnM);
     }
+    setRenderData(dataBadgeCustom);
+  }, [switchState, dataBadgeCustom, dataRnM]);
 
-    if (this.props.dataRnM !== prevProps.dataRnM) {
-      this.setState({ renderData: this.props.dataRnM });
-    }
+  useMemo(() => {
+    const response = renderData.filter((badge) => {
+      if (badge.firstName) {
+        return `${badge.firstName} ${badge.lastName}`
+          .toLowerCase()
+          .includes(query.toLowerCase());
+      }
+      return `${badge.name}`.toLowerCase().includes(query.toLowerCase());
+    });
 
-    if (this.props.dataBadgeCustom !== prevProps.dataBadgeCustom) {
-      this.setState({ renderData: this.props.dataBadgeCustom });
-    }
-  }
+    setFilteredBadges(response);
+  }, [renderData, query]);
 
-  validatRenderData = (item) => {
+  const validatRenderData = (item) => {
     //El nombre de los item.* hacen referencia a como vine el objeto que se recupera de la API
     if ("firstName" in item) {
       return (
-        (this.badgeName = `${item.firstName} ${item.lastName}`),
-        (this.ocupation = `${item.jobTitle}`),
+        (badgeName = `${item.firstName} ${item.lastName}`),
+        (ocupation = `${item.jobTitle}`),
         //Email se usa porque el Gravatar (es decir la imagen) se gener apartir del mismo.
-        (this.email = item.email),
+        (email = item.email),
         //
-        (this.twitter = item.twitter),
-        (this.image = null)
+        (twitter = item.twitter),
+        (image = null)
       );
     }
     return (
-      (this.RnMInformation = true),
-      (this.badgeName = `${item.name}`),
-      (this.ocupation = `${item.species}`),
-      (this.image = item.image),
-      (this.twitter = "No twitter were found")
+      (badgeName = `${item.name}`),
+      (ocupation = `${item.species}`),
+      (image = item.image),
+      (email = null),
+      (twitter = "No twitter were found")
     );
   };
 
-  render() {
-    let dataInOrder;
-    if (this.props.dataEmpty === true) {
-      return (
-        <div>
-          <h1>No Badge were founde</h1>
-          <Link to="badge/new" className="btn btn-primary">
-            Crate new Badge
-          </Link>
-        </div>
-      );
-    }
-
-    if (this.state.renderData.length > 0) {
-      {
-        "firstName" in this.state.renderData[0]
-          ? (dataInOrder = this.state.renderData.reverse())
-          : (dataInOrder = this.state.renderData);
-      }
-      return (
-        <div>
-          <ul className="list-unstyled">
-            <li>
-              {dataInOrder.map((item, index) => {
-                this.validatRenderData(item);
-                if ("firstName" in item) {
-                  return (
-                    <Link
-                      to={`badge/${item.id}`}
-                      key={index}
-                      className="text-reset text-decoration-none"
-                    >
-                      <List
-                        key={index}
-                        badgeName={this.badgeName}
-                        ocupation={this.ocupation}
-                        email={this.email}
-                        twitter={this.twitter}
-                        image={this.image}
-                      />
-                    </Link>
-                  );
-                }
-                return (
-                  <List
-                    key={index}
-                    badgeName={this.badgeName}
-                    ocupation={this.ocupation}
-                    email={this.email}
-                    twitter={this.twitter}
-                    image={this.image}
-                  />
-                );
-              })}
-            </li>
-          </ul>
-        </div>
-      );
-    }
-
+  if (dataEmpty === true) {
+    return (
+      <div>
+        <h1>No Badge were founde</h1>
+        <Link to="badge/new" className="btn btn-primary">
+          Crate new Badge
+        </Link>
+      </div>
+    );
+  }
+  if (inLoading === true) {
     return (
       <div>
         <ul className="list-unstyled">
@@ -117,6 +84,58 @@ class BadgesList extends React.Component {
       </div>
     );
   }
-}
+
+  if (filteredBadges.length === 0 && renderData.length > 0) {
+    return (
+      <div>
+        <h1>No Badge were founde</h1>
+        {switchState === false && (
+          <Link to="badge/new" className="btn btn-primary">
+            Crate new Badge
+          </Link>
+        )}
+      </div>
+    );
+  }
+  return (
+    <div>
+      <ul className="list-unstyled">
+        <li>
+          {filteredBadges.map((item, index) => {
+            validatRenderData(item);
+            if ("firstName" in item) {
+              return (
+                <NavLink
+                  to={`badge/${item.id}`}
+                  id={index}
+                  className="text-reset text-decoration-none"
+                >
+                  <List
+                    key={index}
+                    badgeName={badgeName}
+                    ocupation={ocupation}
+                    email={email}
+                    twitter={twitter}
+                    image={image}
+                  />
+                </NavLink>
+              );
+            }
+            return (
+              <List
+                key={index}
+                badgeName={badgeName}
+                ocupation={ocupation}
+                email={email}
+                twitter={twitter}
+                image={image}
+              />
+            );
+          })}
+        </li>
+      </ul>
+    </div>
+  );
+};
 
 export default BadgesList;

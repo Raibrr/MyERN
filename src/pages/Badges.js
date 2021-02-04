@@ -19,39 +19,40 @@ const Badgests = (props) => {
   const [error, setError] = useState(null);
   const [badgeSwitch, setBadgeSwitch] = useState(false);
   const [pageApiRnM, setPageApiRnM] = useState(1);
-  const [requestBySwitch, setRequestBySwitch] = useState(false);
   const [firstSwitchRequest, setFirstSwitchRequest] = useState(false);
   const [moreBadgesLoading, setMoreBadgesLoading] = useState(false);
+  const [query, setQuery] = useState("");
 
-  useEffect(async () => {
-    await this.fetchdataBadges();
-    if (dataCustom.length === 0) {
-      this.setState({ dataEmpty: true });
-    }
+  useEffect(() => {
+    const fetchdataBadges = async () => {
+      try {
+        const data = await api.badges.list();
+        if (data.length === 0) {
+          return setDataEmpty(true);
+        }
+
+        setDataCustom(data.reverse());
+        setLoading(false);
+      } catch (error) {
+        setError(error);
+      }
+    };
+    fetchdataBadges();
   }, []);
-
-  const fetchdataBadges = async () => {
-    try {
-      const data = await api.badges.list();
-      console.log(data);
-
-      setDataCustom(data);
-      setLoading(false);
-    } catch (error) {
-      setError(error);
+  /*
+  Efecto necesario para que switch solo ida dato a la API en su primera activacion
+*/
+  useEffect(() => {
+    if (badgeSwitch === true && firstSwitchRequest === false) {
+      setLoading(true);
+      fetchDataRnM();
+      setFirstSwitchRequest(true);
     }
-  };
-
+  }, [badgeSwitch]);
+  /*
+   *********
+   */
   const fetchDataRnM = async () => {
-    /* ///
-      If necesario para que el switch no llame mas datos cada que esta true
-    */ ////
-    if (firstSwitchRequest === true && requestBySwitch === true) {
-      console.log("entro al return");
-      return setLoading(false), setRequestBySwitch(false);
-    }
-    //
-    //
     try {
       const response = await Axios.get(
         `https://rickandmortyapi.com/api/character?page=${pageApiRnM}`
@@ -59,45 +60,19 @@ const Badgests = (props) => {
       const {
         data: { results: reply },
       } = response;
-      setLoading(false),
-        setDataRnM([].concat(dataRnM, reply)),
-        setPageApiRnM(pageApiRnM + 1),
-        setRequestBySwitch(false);
-      /* this.setState({
-        loading: false,
-        dataRnM: ,
-        pageApiRnM: pageApiRnM + 1,
-        requestBySwitch: false,
-      }); */
+      setLoading(false);
+      setDataRnM([].concat(dataRnM, reply));
+      setPageApiRnM(pageApiRnM + 1);
     } catch (error) {
-      setError(error), setLoading(false);
-      /* this.setState({ loading: false, error }); */
+      setError(error);
+      setLoading(false);
     }
   };
 
-  const onSwitchAction = async () => {
-    if (badgeSwitch === false) {
-      await setLoading(true), await setRequestBySwitch(true);
-      /* await this.setState({
-        loading: true,
-        requestBySwitch: true,
-      }); */
-      await fetchDataRnM();
-    }
-    if (firstSwitchRequest === false) {
-      setFirstSwitchRequest(true);
-      /* this.setState({ firstSwitchRequest: true }); */
-    }
-    setBadgeSwitch(!badgeSwitch);
-    /* this.setState({ badgeSwitch: !this.state.badgeSwitch }); */
-  };
-
-  const moreBadgesRnM = async () => {
+  const moreBadges = async () => {
     setMoreBadgesLoading(true);
-    /* this.setState({ moreBadgesLoading: true }); */
-    await this.fetchDataRnM();
+    await fetchDataRnM();
     setMoreBadgesLoading(false);
-    /* this.setState({ moreBadgesLoading: false }); */
   };
 
   if (error) {
@@ -115,18 +90,29 @@ const Badgests = (props) => {
             type="switch"
             id="custom-switch"
             checked={badgeSwitch}
-            onChange={onSwitchAction}
+            onChange={() => setBadgeSwitch(!badgeSwitch)}
           />
           <p className="Badge__switch">Badges Rick n Morty?</p>
         </div>
         <div className="col-sm-2 col-5">
-          {this.state.dataCustom.length > 0 ? (
+          {dataCustom.length > 0 && (
             <Button
               text="New Badge"
               className="btn btn-primary"
               redirect={`new`}
             />
-          ) : null}
+          )}
+        </div>
+      </div>
+      <div className="row justify-content-center">
+        <div className="container width: 25%">
+          <p className="Badge__label">Filter Badges</p>
+          <input
+            type="text"
+            value={query}
+            className="form-control mb-3"
+            onChange={(e) => setQuery(e.target.value)}
+          />
         </div>
       </div>
       <div className="container width: 25%">
@@ -134,8 +120,9 @@ const Badgests = (props) => {
           dataEmpty={dataEmpty}
           dataBadgeCustom={dataCustom}
           dataRnM={dataRnM}
-          inLogin={loading}
+          inLoading={loading}
           switchState={badgeSwitch}
+          query={query}
         />
       </div>
       <div>
@@ -146,8 +133,8 @@ const Badgests = (props) => {
             ) : (
               <button
                 type="button"
-                className="btn btn-dark col-8"
-                onClick={() => this.moreBadgesRnM()}
+                className="btn btn-dark col-8 mt-2"
+                onClick={moreBadges}
               >
                 More Badges
               </button>

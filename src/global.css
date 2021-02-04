@@ -32,8 +32,9 @@ a.link-unstyled:hover {
   text-decoration: none;
 }
 
-.Badge__switch {
-  font-family: "Anton";
+.Badge__switch,
+.Badge__label {
+  font-family: "Anton", sans-serif;
   font-weight: 400;
 }
 
