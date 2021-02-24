@@ -9,7 +9,4 @@ const environment = process.env.NODE_ENV;
 const db = knex(knexfile[environment]);
 const bookshelfConfig = bookshelf(db);
 
-module.exports = {
-  db,
-  bookshelfConfig
-}
+module.exports = bookshelfConfig;

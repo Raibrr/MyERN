@@ -1,4 +1,4 @@
-const {bookshelfConfig} = require('./index');
+const bookshelfConfig = require('./index');
 
 const Badges = bookshelfConfig.model('Badges',{
   tableName: 'badges',
