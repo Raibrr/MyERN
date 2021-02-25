@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Modal, Button } from "react-bootstrap";
 import ReactDOM from "react-dom";
-import api from "../api";
+
 
 class DeleteButton extends React.Component {
   state = { modalOpen: false };

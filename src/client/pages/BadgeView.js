@@ -1,5 +1,5 @@
-// React
 import React from "react";
+import Axios from 'axios';
 
 // Components
 import Badge from "../components/Badge.js";
@@ -9,12 +9,14 @@ import List from "../components/List.js";
 
 // Stayles
 import "./styles/BadgeNew.css";
-import badge_header from "../images/badge-header.svg";
 
-//API
-import api from "../api";
 
 class BadgeView extends React.Component {
+  /*
+    ++++++
+    Props come from App component
+    +++++
+  */
   state = {
     putLoading: false,
     postLoading: false,
@@ -28,6 +30,7 @@ class BadgeView extends React.Component {
     },
   };
 
+
   componentDidMount() {
     if (this.props.inEditing === true && this.state.putLoading === false) {
       console.log("ejecucion");
@@ -39,9 +42,21 @@ class BadgeView extends React.Component {
     console.log(this.props.inEditing);
     this.setState({ putLoading: true });
     try {
-      const data = await api.badges.read(this.props.match.params.badgeId);
+      const response = await Axios.get(`http://localhost:3020/api/badges/${this.props.match.params.badgeId}`);
+      const data = response.data;
       console.log(data);
-      this.setState({ putLoading: false, form: data });
+
+      //Mejorar sintaxis
+      this.setState({ 
+        putLoading: false, 
+        form: { 
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          jobTitle: data.jobTitle,
+          twitter: data.twitter,
+        } 
+      });
     } catch (error) {
       throw error;
     }
@@ -61,7 +76,8 @@ class BadgeView extends React.Component {
     this.setState({ postLoading: true });
     try {
       const data = this.state.form;
-      await api.badges.create(data);
+      const URL = `http://localhost:3020/api/badges/new/badge`;
+      await Axios.post(URL, data)
       this.setState({ postLoading: false });
       this.props.history.push("/badges");
     } catch (error) {
@@ -74,7 +90,9 @@ class BadgeView extends React.Component {
     this.setState({ putLoading: true });
     try {
       const data = this.state.form;
-      await api.badges.update(this.props.match.params.badgeId, data);
+      const response = await Axios.put(`http://localhost:3020/api/badges/${this.props.match.params.badgeId}/update-badge`, data);
+      console.log(response);
+      /* await api.badges.update(this.props.match.params.badgeId, data); */
       this.setState({ putLoading: false });
       this.props.history.push("/badges");
     } catch (error) {

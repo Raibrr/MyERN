@@ -2,12 +2,10 @@ const joi = require('joi');
 
 const badge = joi.object({
   firstName: joi.string()
-    .alphanum()
     .min(2)
     .max(30)
     .required(),
   lastName: joi.string()
-    .alphanum()
     .min(2)
     .max(30)
     .required(),
@@ -15,12 +13,10 @@ const badge = joi.object({
     .email()
     .required(),
   jobTitle: joi.string()
-    .alphanum()
     .min(2)
-    .max(30)
+    .max(50)
     .required(),
   twitter: joi.string()
-    .alphanum()
     .min(1)
     .max(30)
     .optional()

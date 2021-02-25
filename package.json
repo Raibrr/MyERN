@@ -11,9 +11,9 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.21.1",
-    "bcrypt": "^5.0.0",
     "bookshelf": "^1.2.0",
     "bootstrap": "^4.6.0",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "joi": "^17.4.0",
@@ -28,17 +28,11 @@
     "react-scripts": "^4.0.2"
   },
   "devDependencies": {
-    "faker": "^5.4.0",
-    "json-server": "^0.16.3",
-    "nodemon": "^2.0.7",
-    "npm-run-all": "^4.1.5"
+    "nodemon": "^2.0.7"
   },
   "scripts": {
     "start:serv": "nodemon",
-    "start": "npm-run-all -p cliente server",
-    "cliente": "react-scripts start",
-    "server": "json-server --port 3001 --watch ./src/server/db.json",
-    "seed": "node server/seed.js",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Axios from "axios";
 //Components
 import BadgesList from "../components/BadgesList";
 import Button from "../components/Button";
@@ -6,10 +7,7 @@ import Hero from "../components/Hero";
 
 //react-bootstrap
 import { Form, Spinner } from "react-bootstrap";
-//services
-import api from "../api";
-//libraries
-import Axios from "axios";
+
 
 const Badgests = (props) => {
   const [dataCustom, setDataCustom] = useState([]);
@@ -26,7 +24,9 @@ const Badgests = (props) => {
   useEffect(() => {
     const fetchdataBadges = async () => {
       try {
-        const data = await api.badges.list();
+        const URL = `http://localhost:3020/api/badges`
+        const response = await Axios.get(URL);
+        const { data } = response;
         if (data.length === 0) {
           return setDataEmpty(true);
         }

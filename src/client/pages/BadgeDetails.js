@@ -1,6 +1,6 @@
 import React from "react";
+import Axios from 'axios'
 import Hero from "../components/Hero";
-import api from "../api";
 import Badge from "../components/Badge";
 import Button from "../components/Button";
 import DeleteButton from "../components/DeleteButton";
@@ -21,7 +21,8 @@ class BadgeDetails extends React.Component {
       console.log("es un numero");
     }
     try {
-      const data = await api.badges.read(this.props.match.params.badgeId);
+      const response = await Axios.get(`http://localhost:3020/api/badges/${this.props.match.params.badgeId}`);
+      const { data } = response;
       console.log(data.firstName);
       this.setState({ badgeData: data, loading: false });
     } catch (error) {
@@ -32,7 +33,9 @@ class BadgeDetails extends React.Component {
   handleDeleteBadge = async () => {
     console.log(this.props.match.params.badgeId);
     try {
-      await api.badges.remove(this.props.match.params.badgeId);
+
+      await Axios.delete(`http://localhost:3020/api/badges/${this.props.match.params.badgeId}/delete`)
+      /* await api.badges.remove(this.props.match.params.badgeId); */
       this.props.history.push("/badges");
     } catch (error) {
       this.setState({ error: error });

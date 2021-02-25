@@ -50,7 +50,7 @@ const BadgesList = ({
         //Email se usa porque el Gravatar (es decir la imagen) se gener apartir del mismo.
         (email = item.email),
         //
-        (twitter = item.twitter),
+        item.twitter === null ? twitter = 'Not Twitter' : (twitter = item.twitter),
         (image = null)
       );
     }
@@ -107,7 +107,7 @@ const BadgesList = ({
               return (
                 <NavLink
                   to={`badge/${item.id}`}
-                  id={index}
+                  key={index}
                   className="text-reset text-decoration-none"
                 >
                   <List
