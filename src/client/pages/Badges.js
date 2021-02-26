@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Axios from "axios";
+import {api_url} from '../../config'
 //Components
 import BadgesList from "../components/BadgesList";
 import Button from "../components/Button";
@@ -24,7 +25,7 @@ const Badgests = (props) => {
   useEffect(() => {
     const fetchdataBadges = async () => {
       try {
-        const URL = `http://localhost:3020/api/badges`
+        const URL = `${api_url}`
         const response = await Axios.get(URL);
         const { data } = response;
         if (data.length === 0) {

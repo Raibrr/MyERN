@@ -1,16 +1,14 @@
-const { config } = require('dotenv');
+const {db_name, db_user, db_password } = require('../config/index')
 
-config({path:`${__dirname}/.env`});
-
-console.log(process.env.DB_NAME);
+console.log(db_name);
 module.exports = {
   development: {
     client: 'mysql',
     connection: {
       host: '127.0.0.1',
-      user: process.env.DB_USER,
-      database:process.env.DB_NAME,
-      password: process.env.DB_PASSWORD,
+      user: db_user,
+      database:db_name,
+      password: db_password,
     },
     pool: {
       min: 2,

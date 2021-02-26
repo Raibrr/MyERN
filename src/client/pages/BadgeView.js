@@ -1,5 +1,6 @@
 import React from "react";
 import Axios from 'axios';
+import {api_url} from '../../config';
 
 // Components
 import Badge from "../components/Badge.js";
@@ -42,7 +43,8 @@ class BadgeView extends React.Component {
     console.log(this.props.inEditing);
     this.setState({ putLoading: true });
     try {
-      const response = await Axios.get(`http://localhost:3020/api/badges/${this.props.match.params.badgeId}`);
+      const URL = `${api_url}/${this.props.match.params.badgeId}`
+      const response = await Axios.get(URL);
       const data = response.data;
       console.log(data);
 
@@ -76,7 +78,7 @@ class BadgeView extends React.Component {
     this.setState({ postLoading: true });
     try {
       const data = this.state.form;
-      const URL = `http://localhost:3020/api/badges/new/badge`;
+      const URL = `${api_url}/new/badge`;
       await Axios.post(URL, data)
       this.setState({ postLoading: false });
       this.props.history.push("/badges");
@@ -90,7 +92,8 @@ class BadgeView extends React.Component {
     this.setState({ putLoading: true });
     try {
       const data = this.state.form;
-      const response = await Axios.put(`http://localhost:3020/api/badges/${this.props.match.params.badgeId}/update-badge`, data);
+      const URL = `${api_url}/${this.props.match.params.badgeId}/update-badge`
+      const response = await Axios.put(URL, data);
       console.log(response);
       /* await api.badges.update(this.props.match.params.badgeId, data); */
       this.setState({ putLoading: false });

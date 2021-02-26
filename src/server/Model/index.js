@@ -1,11 +1,11 @@
 const knex = require('knex');
-const { config } = require('dotenv')
+const { node_env } = require('../../config')
 const knexfile = require('../knexfile');
 const bookshelf = require('bookshelf');
 
-config({path:`${__dirname}/../.env`});
 
-const environment = process.env.NODE_ENV;
+
+const environment = node_env;
 const db = knex(knexfile[environment]);
 const bookshelfConfig = bookshelf(db);
 
